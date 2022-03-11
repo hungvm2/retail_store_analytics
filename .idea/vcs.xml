@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="VcsDirectoryMappings">
+    <mapping directory="$PROJECT_DIR$" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/generator/person_detection/pytorch-YOLOv4" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/generator/person_detection/temp/pytorch-YOLOv4" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/processor/person_detection/pytorch-YOLOv4" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/processor/person_detection/yolov5" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/processor/yolov5" vcs="Git" />
+  </component>
+</project>
