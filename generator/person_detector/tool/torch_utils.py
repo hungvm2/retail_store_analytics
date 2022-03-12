@@ -2,7 +2,7 @@ import time
 import torch
 import numpy as np
 
-from generator.person_detection.tool import utils
+from generator.person_detector.tool import utils
 
 
 def bbox_ious(boxes1, boxes2, x1y1x2y2=True):

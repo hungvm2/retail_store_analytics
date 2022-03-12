@@ -1,6 +1,6 @@
 import torch.nn as nn
 import torch.nn.functional as F
-from generator.person_detection.tool.torch_utils import *
+from generator.person_detector.tool.torch_utils import *
 
 
 def build_targets(pred_boxes, target, anchors, num_anchors, num_classes, nH, nW, noobject_scale, object_scale,

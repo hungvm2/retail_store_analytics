@@ -1,5 +1,5 @@
 import torch.nn as nn
-from generator.person_detection.tool.torch_utils import *
+from generator.person_detector.tool.torch_utils import *
 
 def yolo_forward(output, conf_thresh, num_classes, anchors, num_anchors, scale_x_y, only_objectness=1,
                               validation=False):

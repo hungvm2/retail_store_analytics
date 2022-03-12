@@ -1,10 +1,10 @@
 import torch.nn as nn
 import torch.nn.functional as F
 import numpy as np
-from generator.person_detection.tool.region_loss import RegionLoss
-from generator.person_detection.tool import YoloLayer
-from generator.person_detection.tool.config import *
-from generator.person_detection.tool.torch_utils import *
+from generator.person_detector.tool.region_loss import RegionLoss
+from generator.person_detector.tool import YoloLayer
+from generator.person_detector.tool.config import *
+from generator.person_detector.tool.torch_utils import *
 
 
 class Mish(torch.nn.Module):

@@ -12,10 +12,10 @@
 '''
 from __future__ import division
 import cv2
-from generator.person_detection.tool.darknet2pytorch import Darknet
+from generator.person_detector.tool.darknet2pytorch import Darknet
 import argparse
-from generator.person_detection.tool.utils import *
-from generator.person_detection.tool.torch_utils import *
+from generator.person_detector.tool.utils import *
+from generator.person_detector.tool.torch_utils import *
 
 
 def arg_parse():
@@ -34,7 +34,7 @@ def arg_parse():
 
 
 if __name__ == '__main__':
-    cfgfile = "cfg/yolov4.cfg"
+    cfgfile = "network_data/yolov4.network_data"
     weightsfile = "weight/yolov4.yolov4.pth"
 
     args = arg_parse()
