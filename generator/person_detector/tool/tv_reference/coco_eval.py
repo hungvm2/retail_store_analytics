@@ -1,15 +1,13 @@
+import copy
 import json
+from collections import defaultdict
 
 import numpy as np
-import copy
+import pycocotools.mask as mask_util
 import torch
 import torch._six
-
-from pycocotools.cocoeval import COCOeval
 from pycocotools.coco import COCO
-import pycocotools.mask as mask_util
-
-from collections import defaultdict
+from pycocotools.cocoeval import COCOeval
 
 from . import utils
 
@@ -74,7 +72,7 @@ class CocoEvaluator(object):
         for original_id, prediction in predictions.items():
             if len(prediction) == 0:
                 continue
-            
+
             if self.bbox_fmt == 'coco':
                 boxes = prediction["boxes"].tolist()
             else:
@@ -164,7 +162,7 @@ def convert_to_xywh(boxes, fmt='voc'):
         return torch.stack((xmin, ymin, xmax - xmin, ymax - ymin), dim=1)
     elif fmt.lower() == 'yolo':
         xcen, ycen, w, h = boxes.unbind(1)
-        return torch.stack((xcen-w/2, ycen-h/2, w, h), dim=1)
+        return torch.stack((xcen - w / 2, ycen - h / 2, w, h), dim=1)
 
 
 def merge(img_ids, eval_imgs):

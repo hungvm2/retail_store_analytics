@@ -11,9 +11,10 @@
 
 '''
 import json
-from collections import defaultdict
-from tqdm import tqdm
 import os
+from collections import defaultdict
+
+from tqdm import tqdm
 
 """hyper parameters"""
 json_file_path = 'E:/Dataset/mscoco2017/annotations/instances_train2017.json'

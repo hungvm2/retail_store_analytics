@@ -11,11 +11,14 @@
 
 '''
 from __future__ import division
-import cv2
-from generator.person_detector.tool.darknet2pytorch import Darknet
+
 import argparse
-from generator.person_detector.tool.utils import *
+
+import cv2
+
+from generator.person_detector.tool.darknet2pytorch import Darknet
 from generator.person_detector.tool.torch_utils import *
+from generator.person_detector.tool.utils import *
 
 
 def arg_parse():

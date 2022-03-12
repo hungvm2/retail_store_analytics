@@ -1,17 +1,16 @@
 import bisect
-from collections import defaultdict
 import copy
-from itertools import repeat, chain
 import math
-import numpy as np
+from collections import defaultdict
+from itertools import repeat, chain
 
+import numpy as np
 import torch
 import torch.utils.data
+import torchvision
+from PIL import Image
 from torch.utils.data.sampler import BatchSampler, Sampler
 from torch.utils.model_zoo import tqdm
-import torchvision
-
-from PIL import Image
 
 
 def _repeat_to_at_least(iterable, n):
@@ -34,6 +33,7 @@ class GroupedBatchSampler(BatchSampler):
             0, i.e. they must be in the range [0, num_groups).
         batch_size (int): Size of mini-batch.
     """
+
     def __init__(self, sampler, group_ids, batch_size):
         if not isinstance(sampler, Sampler):
             raise ValueError(

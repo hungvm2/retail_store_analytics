@@ -1,5 +1,6 @@
 import torch.nn as nn
 import torch.nn.functional as F
+
 from generator.person_detector.tool.torch_utils import *
 
 
@@ -190,6 +191,6 @@ class RegionLoss(nn.Module):
             print('       create loss : %f' % (t4 - t3))
             print('             total : %f' % (t4 - t0))
         print('%d: nGT %d, recall %d, proposals %d, loss: x %f, y %f, w %f, h %f, conf %f, cls %f, total %f' % (
-        self.seen, nGT, nCorrect, nProposals, loss_x.data[0], loss_y.data[0], loss_w.data[0], loss_h.data[0],
-        loss_conf.data[0], loss_cls.data[0], loss.data[0]))
+            self.seen, nGT, nCorrect, nProposals, loss_x.data[0], loss_y.data[0], loss_w.data[0], loss_h.data[0],
+            loss_conf.data[0], loss_cls.data[0], loss.data[0]))
         return loss

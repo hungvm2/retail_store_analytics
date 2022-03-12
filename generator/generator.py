@@ -1,9 +1,11 @@
-from person_detector.tool.utils import *
-from person_detector.tool.torch_utils import *
-from person_detector.models import Yolov4
-import cv2
-from persons_tracker import Sort
 import time
+
+import cv2
+
+from person_detector.models import Yolov4
+from person_detector.tool.torch_utils import *
+from person_detector.tool.utils import *
+from persons_tracker import Sort
 
 
 class HeatMapGenerator:
@@ -40,7 +42,7 @@ class HeatMapGenerator:
         self.heatmap_data = np.zeros((int(1280 / self.grid_nums[0]), int(720 / self.grid_nums[1])), dtype=int)
         while True:
             ret, frame = cap.read()
-            if frame_count % video_fps == 0:
+            if frame_count % 2 == 0:
                 sized = cv2.resize(frame, self.network_input_size)
                 sized = cv2.cvtColor(sized, cv2.COLOR_BGR2RGB)
 

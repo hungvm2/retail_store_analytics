@@ -1,4 +1,5 @@
 import torch
+
 from generator.person_detector.tool.torch_utils import convert2cpu
 
 

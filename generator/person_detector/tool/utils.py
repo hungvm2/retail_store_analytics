@@ -1,12 +1,8 @@
-import sys
+import math
 import os
 import time
-import math
-import numpy as np
 
-import itertools
-import struct  # get_image_size
-import imghdr  # get_image_size
+import numpy as np
 
 
 def sigmoid(x):
@@ -20,7 +16,6 @@ def softmax(x):
 
 
 def bbox_iou(box1, box2, x1y1x2y2=True):
-    
     # print('iou box1:', box1)
     # print('iou box2:', box2)
 
@@ -91,12 +86,11 @@ def nms_cpu(boxes, confs, nms_thresh=0.5, min_mode=False):
 
         inds = np.where(over <= nms_thresh)[0]
         order = order[inds + 1]
-    
+
     return np.array(keep)
 
 
-
-def plot_boxes_cv2(img, boxes, savename=None, class_names=None, color=None):
+def plot_boxes_cv2(img, persons, savename=None, class_names=None, color=None):
     import cv2
     img = np.copy(img)
     colors = np.array([[1, 0, 1], [0, 0, 1], [0, 1, 1], [0, 1, 0], [1, 1, 0], [1, 0, 0]], dtype=np.float32)
@@ -111,36 +105,33 @@ def plot_boxes_cv2(img, boxes, savename=None, class_names=None, color=None):
 
     width = img.shape[1]
     height = img.shape[0]
-    for i in range(len(boxes)):
-        box = boxes[i]
-        x1 = int(box[0] * width)
-        y1 = int(box[1] * height)
-        x2 = int(box[2] * width)
-        y2 = int(box[3] * height)
+    for i in range(len(persons)):
+        x1, y1, x2, y2 = persons[i][:4]
         bbox_thick = int(0.6 * (height + width) / 600)
         if color:
             rgb = color
         else:
             rgb = (255, 0, 0)
-        if len(box) >= 7 and class_names:
-            cls_conf = box[5]
-            cls_id = box[6]
-            print('%s: %f' % (class_names[cls_id], cls_conf))
-            classes = len(class_names)
-            offset = cls_id * 123457 % classes
-            red = get_color(2, offset, classes)
-            green = get_color(1, offset, classes)
-            blue = get_color(0, offset, classes)
-            if color is None:
-                rgb = (red, green, blue)
-            msg = str(class_names[cls_id])+" "+str(round(cls_conf,3))
-            t_size = cv2.getTextSize(msg, 0, 0.7, thickness=bbox_thick // 2)[0]
-            c1, c2 = (x1,y1), (x2, y2)
-            c3 = (c1[0] + t_size[0], c1[1] - t_size[1] - 3)
-            cv2.rectangle(img, (x1,y1), (np.float32(c3[0]), np.float32(c3[1])), rgb, -1)
-            img = cv2.putText(img, msg, (c1[0], np.float32(c1[1] - 2)), cv2.FONT_HERSHEY_SIMPLEX,0.7, (0,0,0), bbox_thick//2,lineType=cv2.LINE_AA)
-        
-        img = cv2.rectangle(img, (x1, y1), (x2, y2), rgb, bbox_thick)
+        # if len(box) >= 7 and class_names:
+        #     cls_conf = box[5]
+        #     cls_id = box[6]
+        #     print('%s: %f' % (class_names[cls_id], cls_conf))
+        #     classes = len(class_names)
+        #     offset = cls_id * 123457 % classes
+        #     red = get_color(2, offset, classes)
+        #     green = get_color(1, offset, classes)
+        #     blue = get_color(0, offset, classes)
+        #     if color is None:
+        #         rgb = (red, green, blue)
+        #     msg = str(class_names[cls_id]) + " " + str(round(cls_conf, 3))
+        #     t_size = cv2.getTextSize(msg, 0, 0.7, thickness=bbox_thick // 2)[0]
+        #     c1, c2 = (x1, y1), (x2, y2)
+        #     c3 = (c1[0] + t_size[0], c1[1] - t_size[1] - 3)
+        #     cv2.rectangle(img, (x1, y1), (np.float32(c3[0]), np.float32(c3[1])), rgb, -1)
+        #     img = cv2.putText(img, msg, (c1[0], np.float32(c1[1] - 2)), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 0),
+        #                       bbox_thick // 2, lineType=cv2.LINE_AA)
+
+        img = cv2.rectangle(img, (int(x1), int(y1)), (int(x2), int(y2)), rgb, bbox_thick)
     if savename:
         print("save plot results to %s" % savename)
         cv2.imwrite(savename, img)
@@ -168,9 +159,7 @@ def load_class_names(namesfile):
     return class_names
 
 
-
 def post_processing(img, conf_thresh, nms_thresh, output):
-
     # anchors = [12, 16, 19, 36, 40, 28, 36, 75, 76, 55, 72, 146, 142, 110, 192, 243, 459, 401]
     # num_anchors = 9
     # anchor_masks = [[0, 1, 2], [3, 4, 5], [6, 7, 8]]
@@ -200,8 +189,10 @@ def post_processing(img, conf_thresh, nms_thresh, output):
     t2 = time.time()
 
     bboxes_batch = []
+    width = img.shape[1]
+    height = img.shape[0]
     for i in range(box_array.shape[0]):
-       
+
         argwhere = max_conf[i] > conf_thresh
         l_box_array = box_array[i, argwhere, :]
         l_max_conf = max_conf[i, argwhere]
@@ -209,31 +200,36 @@ def post_processing(img, conf_thresh, nms_thresh, output):
 
         bboxes = []
         # nms for each class
-        for j in range(num_classes):
+        # for j in range(num_classes):
+        j = 0
+        cls_argwhere = l_max_id == j
+        ll_box_array = l_box_array[cls_argwhere, :]
+        ll_max_conf = l_max_conf[cls_argwhere]
+        ll_max_id = l_max_id[cls_argwhere]
 
-            cls_argwhere = l_max_id == j
-            ll_box_array = l_box_array[cls_argwhere, :]
-            ll_max_conf = l_max_conf[cls_argwhere]
-            ll_max_id = l_max_id[cls_argwhere]
+        keep = nms_cpu(ll_box_array, ll_max_conf, nms_thresh)
 
-            keep = nms_cpu(ll_box_array, ll_max_conf, nms_thresh)
-            
-            if (keep.size > 0):
-                ll_box_array = ll_box_array[keep, :]
-                ll_max_conf = ll_max_conf[keep]
-                ll_max_id = ll_max_id[keep]
+        if keep.size > 0:
+            ll_box_array = ll_box_array[keep, :]
+            ll_max_conf = ll_max_conf[keep]
+            # ll_max_id = ll_max_id[keep]
 
-                for k in range(ll_box_array.shape[0]):
-                    bboxes.append([ll_box_array[k, 0], ll_box_array[k, 1], ll_box_array[k, 2], ll_box_array[k, 3], ll_max_conf[k], ll_max_conf[k], ll_max_id[k]])
-        
+            for k in range(ll_box_array.shape[0]):
+                x1 = ll_box_array[k, 0] * width
+                y1 = ll_box_array[k, 1] * height
+                x2 = ll_box_array[k, 2] * width
+                y2 = ll_box_array[k, 3] * height
+                bboxes.append(
+                    [x1, y1, x2, y2, ll_max_conf[k]])
+
         bboxes_batch.append(bboxes)
 
     t3 = time.time()
 
-    print('-----------------------------------')
-    print('       max and argmax : %f' % (t2 - t1))
-    print('                  nms : %f' % (t3 - t2))
-    print('Post processing total : %f' % (t3 - t1))
-    print('-----------------------------------')
-    
+    # print('-----------------------------------')
+    # print('       max and argmax : %f' % (t2 - t1))
+    # print('                  nms : %f' % (t3 - t2))
+    # print('Post processing total : %f' % (t3 - t1))
+    # print('-----------------------------------')
+
     return bboxes_batch

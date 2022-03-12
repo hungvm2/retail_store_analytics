@@ -2,14 +2,11 @@
 '''
 
 '''
-import torch
-import os, sys
-from torch.nn import functional as F
-from easydict import EasyDict as ED
-
 import numpy as np
+import torch
+from easydict import EasyDict as ED
 from packaging import version
-
+from torch.nn import functional as F
 
 if version.parse(torch.__version__) >= version.parse('1.5.0'):
     def _true_divide(dividend, divisor):
@@ -32,14 +29,14 @@ def bboxes_iou_test(bboxes_a, bboxes_b, fmt='voc', iou_type='iou'):
         except ModuleNotFoundError:
             cv2 = None
             from PIL import Image, ImageDraw
-    
+
     assert iou_type.lower() in ['iou', 'giou', 'diou', 'ciou']
 
     if isinstance(bboxes_a, np.ndarray):
         bboxes_a = torch.Tensor(bboxes_a)
     if isinstance(bboxes_b, np.ndarray):
         bboxes_b = torch.Tensor(bboxes_b)
-    
+
     if bboxes_a.shape[1] != 4 or bboxes_b.shape[1] != 4:
         raise IndexError
 
@@ -49,17 +46,17 @@ def bboxes_iou_test(bboxes_a, bboxes_b, fmt='voc', iou_type='iou'):
     # top left
     if fmt.lower() == 'voc':  # xmin, ymin, xmax, ymax
         # top left
-        tl_intersect = torch.max(bboxes_a[:, np.newaxis, :2], bboxes_b[:, :2]) # of shape `(N,K,2)`
+        tl_intersect = torch.max(bboxes_a[:, np.newaxis, :2], bboxes_b[:, :2])  # of shape `(N,K,2)`
         # bottom right
         br_intersect = torch.min(bboxes_a[:, np.newaxis, 2:], bboxes_b[:, 2:])
         bb_a = bboxes_a[:, 2:] - bboxes_a[:, :2]  # w, h
         bb_b = bboxes_b[:, 2:] - bboxes_b[:, :2]  # w, h
     elif fmt.lower() == 'yolo':  # xcen, ycen, w, h
         tl_intersect = torch.max((bboxes_a[:, np.newaxis, :2] - bboxes_a[:, np.newaxis, 2:] / 2),
-                       (bboxes_b[:, :2] - bboxes_b[:, 2:] / 2))
+                                 (bboxes_b[:, :2] - bboxes_b[:, 2:] / 2))
         # bottom right
         br_intersect = torch.min((bboxes_a[:, np.newaxis, :2] + bboxes_a[:, np.newaxis, 2:] / 2),
-                       (bboxes_b[:, :2] + bboxes_b[:, 2:] / 2))
+                                 (bboxes_b[:, :2] + bboxes_b[:, 2:] / 2))
         bb_a = bboxes_a[:, 2:]
         bb_b = bboxes_b[:, 2:]
     elif fmt.lower() == 'coco':  # xmin, ymin, w, h
@@ -67,7 +64,7 @@ def bboxes_iou_test(bboxes_a, bboxes_b, fmt='voc', iou_type='iou'):
         tl_intersect = torch.max(bboxes_a[:, np.newaxis, :2], bboxes_b[:, :2])
         # bottom right
         br_intersect = torch.min((bboxes_a[:, np.newaxis, :2] + bboxes_a[:, np.newaxis, 2:]),
-                       (bboxes_b[:, :2] + bboxes_b[:, 2:]))
+                                 (bboxes_b[:, :2] + bboxes_b[:, 2:]))
         bb_a = bboxes_a[:, 2:]
         bb_b = bboxes_b[:, 2:]
 
@@ -89,22 +86,22 @@ def bboxes_iou_test(bboxes_a, bboxes_b, fmt='voc', iou_type='iou'):
 
     if fmt.lower() == 'voc':  # xmin, ymin, xmax, ymax
         # top left
-        tl_union = torch.min(bboxes_a[:, np.newaxis, :2], bboxes_b[:, :2]) # of shape `(N,K,2)`
+        tl_union = torch.min(bboxes_a[:, np.newaxis, :2], bboxes_b[:, :2])  # of shape `(N,K,2)`
         # bottom right
         br_union = torch.max(bboxes_a[:, np.newaxis, 2:], bboxes_b[:, 2:])
     elif fmt.lower() == 'yolo':  # xcen, ycen, w, h
         tl_union = torch.min((bboxes_a[:, np.newaxis, :2] - bboxes_a[:, np.newaxis, 2:] / 2),
-                       (bboxes_b[:, :2] - bboxes_b[:, 2:] / 2))
+                             (bboxes_b[:, :2] - bboxes_b[:, 2:] / 2))
         # bottom right
         br_union = torch.max((bboxes_a[:, np.newaxis, :2] + bboxes_a[:, np.newaxis, 2:] / 2),
-                       (bboxes_b[:, :2] + bboxes_b[:, 2:] / 2))
+                             (bboxes_b[:, :2] + bboxes_b[:, 2:] / 2))
     elif fmt.lower() == 'coco':  # xmin, ymin, w, h
         # top left
         tl_union = torch.min(bboxes_a[:, np.newaxis, :2], bboxes_b[:, :2])
         # bottom right
         br_union = torch.max((bboxes_a[:, np.newaxis, :2] + bboxes_a[:, np.newaxis, 2:]),
-                       (bboxes_b[:, :2] + bboxes_b[:, 2:]))
-    
+                             (bboxes_b[:, :2] + bboxes_b[:, 2:]))
+
     # c for covering, of shape `(N,K,2)`
     # the last dim is box width, box hight
     bboxes_c = br_union - tl_union
@@ -121,14 +118,14 @@ def bboxes_iou_test(bboxes_a, bboxes_b, fmt='voc', iou_type='iou'):
     #     return giou
 
     if fmt.lower() == 'voc':  # xmin, ymin, xmax, ymax
-        centre_a = (bboxes_a[..., 2 :] + bboxes_a[..., : 2]) / 2
-        centre_b = (bboxes_b[..., 2 :] + bboxes_b[..., : 2]) / 2
+        centre_a = (bboxes_a[..., 2:] + bboxes_a[..., : 2]) / 2
+        centre_b = (bboxes_b[..., 2:] + bboxes_b[..., : 2]) / 2
     elif fmt.lower() == 'yolo':  # xcen, ycen, w, h
-        centre_a = (bboxes_a[..., : 2] + bboxes_a[..., 2 :]) / 2
-        centre_b = (bboxes_b[..., : 2] + bboxes_b[..., 2 :]) / 2
+        centre_a = (bboxes_a[..., : 2] + bboxes_a[..., 2:]) / 2
+        centre_b = (bboxes_b[..., : 2] + bboxes_b[..., 2:]) / 2
     elif fmt.lower() == 'coco':  # xmin, ymin, w, h
-        centre_a = bboxes_a[..., 2 :] + bboxes_a[..., : 2]/2
-        centre_b = bboxes_b[..., 2 :] + bboxes_b[..., : 2]/2
+        centre_a = bboxes_a[..., 2:] + bboxes_a[..., : 2] / 2
+        centre_b = bboxes_b[..., 2:] + bboxes_b[..., : 2] / 2
 
     centre_dist = torch.norm(centre_a[:, np.newaxis] - centre_b, p='fro', dim=2)
     diag_len = torch.norm(bboxes_c, p='fro', dim=2)
@@ -148,14 +145,14 @@ def bboxes_iou_test(bboxes_a, bboxes_b, fmt='voc', iou_type='iou'):
     eps = 1e-7
     v = torch.clamp(v, -1+eps, 1-eps)
     """
-    v = F.cosine_similarity(bb_a[:,np.newaxis,:], bb_b, dim=-1)
-    v = (_true_divide(2*torch.acos(v), np.pi)).pow(2)
-    alpha = (_true_divide(v, 1-iou+v))*((iou>=0.5).type(iou.type()))
+    v = F.cosine_similarity(bb_a[:, np.newaxis, :], bb_b, dim=-1)
+    v = (_true_divide(2 * torch.acos(v), np.pi)).pow(2)
+    alpha = (_true_divide(v, 1 - iou + v)) * ((iou >= 0.5).type(iou.type()))
 
     ciou = diou - alpha * v
 
-    if N==K==1:
-        print("\n"+"*"*50)
+    if N == K == 1:
+        print("\n" + "*" * 50)
         print(f"bboxes_a = {bboxes_a}")
         print(f"bboxes_b = {bboxes_b}")
 
@@ -171,13 +168,13 @@ def bboxes_iou_test(bboxes_a, bboxes_b, fmt='voc', iou_type='iou'):
         print(f"br_union = {br_union}")
 
         print(f"area_covering (area of bboxes_c) = {area_covering}")
-        
+
         print(f"centre_dist = {centre_dist}")
         print(f"diag_len = {diag_len}")
 
         print("for computing ciou")
         inner_product = torch.einsum('nm,km->nk', bb_a, bb_b)
-        product_of_lengths = torch.norm(bb_a, p='fro', dim=1)[:,np.newaxis] * torch.norm(bb_b, p='fro', dim=1)
+        product_of_lengths = torch.norm(bb_a, p='fro', dim=1)[:, np.newaxis] * torch.norm(bb_b, p='fro', dim=1)
         print(f"inner product of bb_a and bb_b is {inner_product}")
         print(f"product of lengths of bb_a and bb_b is {product_of_lengths}")
         print(f"inner product divided by product of lengths equals {_true_divide(inner_product, product_of_lengths)}")
@@ -186,38 +183,47 @@ def bboxes_iou_test(bboxes_a, bboxes_b, fmt='voc', iou_type='iou'):
         print(f"v = {v}")
         print(f"alpha = {alpha}")
 
-        bc = ED({"xmin":tl_union.numpy().astype(int)[0][0][0], "ymin":tl_union.numpy().astype(int)[0][0][1], "xmax":br_union.numpy().astype(int)[0][0][0], "ymax":br_union.numpy().astype(int)[0][0][1]})
-        adjust_x = bc.xmin - int(0.25*(bc.xmax-bc.xmin))
-        adjust_y = bc.ymin - int(0.25*(bc.ymax-bc.ymin))
+        bc = ED({"xmin": tl_union.numpy().astype(int)[0][0][0], "ymin": tl_union.numpy().astype(int)[0][0][1],
+                 "xmax": br_union.numpy().astype(int)[0][0][0], "ymax": br_union.numpy().astype(int)[0][0][1]})
+        adjust_x = bc.xmin - int(0.25 * (bc.xmax - bc.xmin))
+        adjust_y = bc.ymin - int(0.25 * (bc.ymax - bc.ymin))
 
         print(f"adjust_x = {adjust_x}")
         print(f"adjust_y = {adjust_y}")
 
-        bc.xmin, bc.ymin, bc.xmax, bc.ymax = bc.xmin-adjust_x, bc.ymin-adjust_y, bc.xmax-adjust_x, bc.ymax-adjust_y
-        
+        bc.xmin, bc.ymin, bc.xmax, bc.ymax = bc.xmin - adjust_x, bc.ymin - adjust_y, bc.xmax - adjust_x, bc.ymax - adjust_y
+
         ba, bb = bboxes_a.numpy().astype(int)[0], bboxes_b.numpy().astype(int)[0]
         if fmt.lower() == 'voc':  # xmin, ymin, xmax, ymax
-            ba = ED({"xmin":ba[0]-adjust_x, "ymin":ba[1]-adjust_y, "xmax":ba[2]-adjust_x, "ymax":ba[3]-adjust_y})
-            bb = ED({"xmin":bb[0]-adjust_x, "ymin":bb[1]-adjust_y, "xmax":bb[2]-adjust_x, "ymax":bb[3]-adjust_y})
+            ba = ED({"xmin": ba[0] - adjust_x, "ymin": ba[1] - adjust_y, "xmax": ba[2] - adjust_x,
+                     "ymax": ba[3] - adjust_y})
+            bb = ED({"xmin": bb[0] - adjust_x, "ymin": bb[1] - adjust_y, "xmax": bb[2] - adjust_x,
+                     "ymax": bb[3] - adjust_y})
         elif fmt.lower() == 'yolo':  # xcen, ycen, w, h
-            ba = ED({"xmin":ba[0]-ba[2]//2-adjust_x, "ymin":ba[1]-ba[3]//2-adjust_y, "xmax":ba[0]+ba[2]//2-adjust_x, "ymax":ba[1]+ba[3]//2-adjust_y})
-            bb = ED({"xmin":bb[0]-bb[2]//2-adjust_x, "ymin":bb[1]-bb[3]//2-adjust_y, "xmax":bb[0]+bb[2]//2-adjust_x, "ymax":bb[1]+bb[3]//2-adjust_y})
+            ba = ED({"xmin": ba[0] - ba[2] // 2 - adjust_x, "ymin": ba[1] - ba[3] // 2 - adjust_y,
+                     "xmax": ba[0] + ba[2] // 2 - adjust_x, "ymax": ba[1] + ba[3] // 2 - adjust_y})
+            bb = ED({"xmin": bb[0] - bb[2] // 2 - adjust_x, "ymin": bb[1] - bb[3] // 2 - adjust_y,
+                     "xmax": bb[0] + bb[2] // 2 - adjust_x, "ymax": bb[1] + bb[3] // 2 - adjust_y})
         elif fmt.lower() == 'coco':  # xmin, ymin, w, h
-            ba = ED({"xmin":ba[0]-adjust_x, "ymin":ba[1]-adjust_y, "xmax":ba[0]+ba[2]-adjust_x, "ymax":ba[1]+ba[3]-adjust_y})
-            bb = ED({"xmin":bb[0]-adjust_x, "ymin":bb[1]-adjust_y, "xmax":bb[0]+bb[2]-adjust_x, "ymax":bb[1]+bb[3]-adjust_y})
+            ba = ED({"xmin": ba[0] - adjust_x, "ymin": ba[1] - adjust_y, "xmax": ba[0] + ba[2] - adjust_x,
+                     "ymax": ba[1] + ba[3] - adjust_y})
+            bb = ED({"xmin": bb[0] - adjust_x, "ymin": bb[1] - adjust_y, "xmax": bb[0] + bb[2] - adjust_x,
+                     "ymax": bb[1] + bb[3] - adjust_y})
 
         print(f"ba = {ba}")
         print(f"bb = {bb}")
         print(f"bc = {bc}")
 
-        plane = np.full(shape=(int(1.5*(bc.ymax-bc.ymin)),int(1.5*(bc.xmax-bc.xmin)),3), fill_value=255, dtype=np.uint8)
+        plane = np.full(shape=(int(1.5 * (bc.ymax - bc.ymin)), int(1.5 * (bc.xmax - bc.xmin)), 3), fill_value=255,
+                        dtype=np.uint8)
         img_with_boxes = plane.copy()
 
         line_size = 1
         if cv2:
             cv2.rectangle(img_with_boxes, (ba.xmin, ba.ymin), (ba.xmax, ba.ymax), (0, 255, 0), line_size)
             cv2.rectangle(img_with_boxes, (bb.xmin, bb.ymin), (bb.xmax, bb.ymax), (0, 0, 255), line_size)
-            cv2.rectangle(img_with_boxes, (max(0,bc.ymin-1), max(0,bc.ymin-1)), (bc.xmax, bc.ymax), (255, 0, 0), line_size)
+            cv2.rectangle(img_with_boxes, (max(0, bc.ymin - 1), max(0, bc.ymin - 1)), (bc.xmax, bc.ymax), (255, 0, 0),
+                          line_size)
         else:
             img_with_boxes = Image.fromarray(img_with_boxes)
             drawer = ImageDraw.Draw(img_with_boxes)
@@ -226,11 +232,12 @@ def bboxes_iou_test(bboxes_a, bboxes_b, fmt='voc', iou_type='iou'):
             # drawer.line([((max(0,bc.xmin-1), max(0,bc.ymin-1)), ((max(0,bc.xmin-1), bc.ymax), (bc.xmax, bc.ymax), (bc.xmax, max(0,bc.ymin-1)), ((max(0,bc.xmin-1), max(0,bc.ymin-1))], fill='red', width=line_size)
             drawer.rectangle([(ba.xmin, ba.ymin), (ba.xmax, ba.ymax)], outline='green', width=line_size)
             drawer.rectangle([(bb.xmin, bb.ymin), (bb.xmax, bb.ymax)], outline='blue', width=line_size)
-            drawer.rectangle([(max(0,bc.xmin-1), max(0,bc.ymin-1)), (bc.xmax+1, bc.ymax+1)], outline='red', width=line_size)
+            drawer.rectangle([(max(0, bc.xmin - 1), max(0, bc.ymin - 1)), (bc.xmax + 1, bc.ymax + 1)], outline='red',
+                             width=line_size)
             img_with_boxes = np.array(img_with_boxes)
             del drawer
 
-        plt.figure(figsize=(7,7))
+        plt.figure(figsize=(7, 7))
         plt.imshow(img_with_boxes)
         plt.show()
 
@@ -260,10 +267,10 @@ def original_iou_test(bboxes_a, bboxes_b, xyxy=True):
         bboxes_a = torch.Tensor(bboxes_a)
     if isinstance(bboxes_b, np.ndarray):
         bboxes_b = torch.Tensor(bboxes_a)
-    
+
     N, K = bboxes_a.shape[0], bboxes_b.shape[0]
     # if N, K all equal 1, then plot
-    
+
     # top left
     if xyxy:
         tl = torch.max(bboxes_a[:, None, :2], bboxes_b[:, :2])
