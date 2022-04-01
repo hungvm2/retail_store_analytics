@@ -3,7 +3,7 @@ import os
 import time
 
 import numpy as np
-
+import cv2
 
 def sigmoid(x):
     return 1.0 / (np.exp(-x) + 1.)
@@ -90,51 +90,10 @@ def nms_cpu(boxes, confs, nms_thresh=0.5, min_mode=False):
     return np.array(keep)
 
 
-def plot_boxes_cv2(img, persons, savename=None, class_names=None, color=None):
-    import cv2
-    img = np.copy(img)
-    colors = np.array([[1, 0, 1], [0, 0, 1], [0, 1, 1], [0, 1, 0], [1, 1, 0], [1, 0, 0]], dtype=np.float32)
-
-    def get_color(c, x, max_val):
-        ratio = float(x) / max_val * 5
-        i = int(math.floor(ratio))
-        j = int(math.ceil(ratio))
-        ratio = ratio - i
-        r = (1 - ratio) * colors[i][c] + ratio * colors[j][c]
-        return int(r * 255)
-
-    width = img.shape[1]
-    height = img.shape[0]
-    for i in range(len(persons)):
-        x1, y1, x2, y2 = persons[i][:4]
-        bbox_thick = int(0.6 * (height + width) / 600)
-        if color:
-            rgb = color
-        else:
-            rgb = (255, 0, 0)
-        # if len(box) >= 7 and class_names:
-        #     cls_conf = box[5]
-        #     cls_id = box[6]
-        #     print('%s: %f' % (class_names[cls_id], cls_conf))
-        #     classes = len(class_names)
-        #     offset = cls_id * 123457 % classes
-        #     red = get_color(2, offset, classes)
-        #     green = get_color(1, offset, classes)
-        #     blue = get_color(0, offset, classes)
-        #     if color is None:
-        #         rgb = (red, green, blue)
-        #     msg = str(class_names[cls_id]) + " " + str(round(cls_conf, 3))
-        #     t_size = cv2.getTextSize(msg, 0, 0.7, thickness=bbox_thick // 2)[0]
-        #     c1, c2 = (x1, y1), (x2, y2)
-        #     c3 = (c1[0] + t_size[0], c1[1] - t_size[1] - 3)
-        #     cv2.rectangle(img, (x1, y1), (np.float32(c3[0]), np.float32(c3[1])), rgb, -1)
-        #     img = cv2.putText(img, msg, (c1[0], np.float32(c1[1] - 2)), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 0),
-        #                       bbox_thick // 2, lineType=cv2.LINE_AA)
-
-        img = cv2.rectangle(img, (int(x1), int(y1)), (int(x2), int(y2)), rgb, bbox_thick)
-    if savename:
-        print("save plot results to %s" % savename)
-        cv2.imwrite(savename, img)
+def plot_boxes_cv2(img, person, bbox_thick):
+    x1, y1, x2, y2 = person.bbox[:4]
+    rgb = (255, 0, 0)
+    img = cv2.rectangle(img, (int(x1), int(y1)), (int(x2), int(y2)), rgb, bbox_thick)
     return img
 
 
