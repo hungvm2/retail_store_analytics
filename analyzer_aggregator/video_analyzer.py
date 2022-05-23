@@ -4,36 +4,27 @@ import time
 import cv2
 import mysql.connector
 import numpy as np
-import torch
 from contextlib import closing
 
 from data_aggregator import DataAggregator
-from person_detector.models import Yolov4
-from person_detector.tool.torch_utils import do_detect
-from person_detector.tool.utils import load_class_names, plot_boxes_cv2
+
+from person_detector_YOLOv3.detector import PersonDetector
 from persons_tracker import PersonsTracker
 
 
 class VideoAnalyzer:
-    def __init__(self, weights_path, names_path):
+    def __init__(self, weights_path, cfg_path, classes_name_path):
         self.db_connector = mysql.connector.connect(
             host="localhost",
             user="root",
             password="abcd@1234",
             database="retail_store_analytics"
         )
-        self.person_detector = Yolov4(yolov4conv137weight=None, n_classes=80, inference=True)
-        pretrained_dict = torch.load(weights_path, map_location=torch.device('cuda'))
-        self.person_detector.load_state_dict(pretrained_dict)
-        self.use_cuda = True
-        if self.use_cuda:
-            self.person_detector.cuda()
-        self.class_names = load_class_names(names_path)
-        self.network_input_size = (416, 416)
+        self.person_detector = PersonDetector(weights_path, cfg_path, classes_name_path, 416)
         self.person_tracker = PersonsTracker()
         self.frame_size = (1280, 720)
         self.data_aggregator = DataAggregator(self.db_connector, self.frame_size)
-        self.time_interval = 60
+        self.thresh_interval = 60
 
     def get_camera_url_from_db(self, camera_id):
         sql_command = f"SELECT url from camera WHERE cam_id = {camera_id}"
@@ -56,15 +47,14 @@ class VideoAnalyzer:
         dets = np.empty((0, 5))
         start_time = time.time()
 
-        while True:
+        while cap.isOpened():
             ret, frame = cap.read()
+            if not ret:
+                break
 
             if frame_count % 3 == 0:
-                sized = cv2.resize(frame, self.network_input_size)
-                sized = cv2.cvtColor(sized, cv2.COLOR_BGR2RGB)
-
                 start = time.time()
-                dets = np.array(do_detect(self.person_detector, sized, 0.3, 0.6, self.use_cuda, frame)[0])
+                dets = self.person_detector.detect_image(frame)
                 finish = time.time()
                 print('Predicted in %f seconds.' % (finish - start))
 
@@ -73,10 +63,10 @@ class VideoAnalyzer:
             result_img = frame
             for person in persons:
                 self.data_aggregator.accumulate_aggregated_data(person)
-                result_img = plot_boxes_cv2(frame, person, bbox_thick)
+                result_img = self.person_detector.plot_boxes_cv2(frame, person, bbox_thick)
 
             now = time.time()
-            if now - start_time > self.time_interval:
+            if now - start_time > self.thresh_interval:
                 self.data_aggregator.save_aggregated_data(camera_id)
                 start_time = now
 
@@ -98,8 +88,10 @@ def parse_args():
 
 
 if __name__ == '__main__':
-    weights_file = "person_detector/network_data/yolov4.pth"
-    names_file = "person_detector/network_data/coco.names"
+    network_name = "yolov3"
+    weights_file = f"person_detector_YOLOv3/network_data/{network_name}.weights"
+    cfg_file = f"person_detector_YOLOv3/network_data/{network_name}.cfg"
+    names_file = "person_detector_YOLOv3/network_data/coco.names"
     args = parse_args()
-    video_analyzer = VideoAnalyzer(weights_file, names_file)
+    video_analyzer = VideoAnalyzer(weights_file, cfg_file, names_file)
     video_analyzer.process(args.camera_id)

@@ -7,5 +7,7 @@
     <mapping directory="$PROJECT_DIR$/processor/person_detection/pytorch-YOLOv4" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/processor/person_detection/yolov5" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/processor/yolov5" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/temp/PyTorch-YOLOv3" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/temp/pytorch-YOLOv4" vcs="Git" />
   </component>
 </project>

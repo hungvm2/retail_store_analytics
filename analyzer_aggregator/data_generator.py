@@ -5,9 +5,9 @@ import time
 import cv2
 import numpy as np
 
-from person_detector.tool.torch_utils import do_detect
-from person_detector.tool.utils import plot_boxes_cv2
-from video_analyzer import VideoAnalyzer
+from temp.person_detector_YOLOv4.tool import do_detect
+from temp.person_detector_YOLOv4.tool import plot_boxes_cv2
+from temp.video_analyzer import VideoAnalyzer
 
 
 class DataGenerator(VideoAnalyzer):
@@ -76,8 +76,8 @@ class DataGenerator(VideoAnalyzer):
 
 
 if __name__ == '__main__':
-    weights_file = "person_detector/network_data/yolov4.pth"
-    names_file = "person_detector/network_data/coco.names"
+    weights_file = "temp/person_detector_YOLOv4/network_data/yolov4.pth"
+    names_file = "temp/person_detector_YOLOv4/network_data/coco.names"
     video_urls = {
         "2022-03-22 8:00:00": "../temp/real_data/NVR_ch24_main_20220322080011_20220322090011.mp4",
         "2022-03-22 10:00:00": "../temp/real_data/NVR_ch24_main_20220322100011_20220322110011.mp4",

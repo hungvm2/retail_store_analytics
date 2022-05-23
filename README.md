@@ -1,7 +1,7 @@
-# Heatmap Project
-### Heatmap Project gồm có 3 thành phần chính:
-- Module xử lý luồng video và sinh ra dữ liệu heatmap
-- Module visualize thông tin heatmap trên giao diện web
+# Retail Store Analytics Project
+### Project gồm có 3 thành phần chính:
+- Module phân tích luồng video và tổng hợp dữ liệu khách hàng trong cửa hàng
+- Module visualize thông tin khách hàng trên giao diện web
 
 ### Chi tiết công nghệ của từng thành phần:
 
@@ -11,9 +11,9 @@
     - SORT để tracking các đối tượng người trong khung hình 
     - Logic lưu trữ data vị trí trọng tâm của từng người trong khung hình vào file dữ liệu 
 
-2. MySQL để lưu trữ dữ liệu heatmap sau phân tích, MySQL Workbench để thao tác với DB từ GUI 
+2. MySQL để lưu trữ dữ liệu khách hàng sau phân tích luồng video, MySQL Workbench để thao tác với DB từ GUI 
  
-3. Module visualize thông tin heatmap trên giao diện jupyter notebook
+3. Module visualize thông tin khách hàng trên giao diện jupyter notebook
     - Jupyter Notebook
     - Matplotlib
     
@@ -52,14 +52,26 @@
     - Mở MySQL Workbench
     > sudo mysql-workbench
 
-3.Tạo môi trường anaconda tên là heatmap
-  > conda create -n heatmap python=3.9.7 -y
+3.Tạo môi trường anaconda tên là retail_store
+  > conda create -n retail_store python=3.9 -y
     
 4.Kích hoạt môi trường heatmap: 
-  > conda activate heatmap 
+  > conda activate retail_store 
 
-5.Cài các thư viện từ file requirements.txt
-  > pip install ./requirements.txt
+5.Cài các thư viện:
+  > pip install -r ./requirements.txt
+  > pip install torch==1.10.0+cu113 torchvision==0.11.1+cu113 -f https://download.pytorch.org/whl/torch_stable.html
+  > pip install mysql-connector-python
+  > pip install scikit-image 
+
+### Hướng dẫn chạy module generate data:
+```
+cd /mnt/Data/MasterofDataScience/Phat\ trien\ phan\ mem\ nang\ cao\ cho\ tinh\ toan\ khoa\ hoc/retail_store_analytics/aggregator   
+python aggregator.py
+
+```
+
+
 
 ### References:
 ```
