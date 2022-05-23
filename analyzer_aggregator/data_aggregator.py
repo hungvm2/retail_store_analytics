@@ -8,8 +8,8 @@ from contextlib import closing
 
 class DataAggregator:
     def __init__(self, db_connector, frame_size):
-        self.grid_size = (20, 20)
-        self.grid_nums = (frame_size[0] // self.grid_size[0], frame_size[1] // self.grid_size[1])
+        self.grid_nums = (20, 20)
+        self.grid_size = (frame_size[0] // self.grid_nums[0], frame_size[1] // self.grid_nums[1])
         self.grid_pos_checking_time_interval = 3
         self.db_connector = db_connector
         self.aggregated_data = np.zeros((self.grid_nums[0], self.grid_nums[1]), dtype=int)
