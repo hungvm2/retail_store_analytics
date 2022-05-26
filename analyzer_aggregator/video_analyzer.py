@@ -22,7 +22,6 @@ class VideoAnalyzer:
         )
         self.person_detector = PersonDetector(weights_path, cfg_path, classes_name_path, 416)
         self.person_tracker = PersonsTracker()
-        self.frame_size = (1280, 720)
         self.data_aggregator = DataAggregator(self.db_connector, self.frame_size)
         self.thresh_interval = 60
 
@@ -37,12 +36,6 @@ class VideoAnalyzer:
     def process(self, camera_id):
         camera_url = self.get_camera_url_from_db(camera_id)
         cap = cv2.VideoCapture(camera_url)
-        width = self.frame_size[0]
-        height = self.frame_size[1]
-        # cap.set(3, width)
-        # cap.set(4, height)
-        # video_fps = cap.get(cv2.CAP_PROP_FPS)
-        bbox_thick = int(0.6 * (height + width) / 600)
         frame_count = 0
         dets = np.empty((0, 5))
         start_time = time.time()
@@ -70,7 +63,7 @@ class VideoAnalyzer:
                 self.data_aggregator.save_aggregated_data(camera_id)
                 start_time = now
 
-            cv2.imshow('Yolo demo', result_img)
+            cv2.imshow('Retail store demo', result_img)
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
             frame_count += 1

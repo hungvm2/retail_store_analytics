@@ -61,12 +61,13 @@ class Visualizer:
                 y.append(val)
         # print(x)
         # print(y)
-        fig2, ax2 = plt.subplots(figsize=(19.2, 10.8), dpi=100)
-        plt.subplots_adjust(bottom=0.3, top=0.9)
+        fig2, ax2 = plt.subplots(figsize=(19.2, 10.8))
+        # plt.subplots_adjust(bottom=0.3, top=0.9)
         ax2.bar(x, y)
         ax2.set_ylabel('Customer dense')
         ax2.set_title('Customer dense by Time')
         ax2.set_xticklabels(x, rotation='vertical')
+        plt.rcParams.update({'font.size': 32})
         plt.show()
 
     # def show_heatmap2(self, start_time, end_time):
