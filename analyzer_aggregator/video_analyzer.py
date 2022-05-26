@@ -39,8 +39,8 @@ class VideoAnalyzer:
         cap = cv2.VideoCapture(camera_url)
         width = self.frame_size[0]
         height = self.frame_size[1]
-        cap.set(3, width)
-        cap.set(4, height)
+        # cap.set(3, width)
+        # cap.set(4, height)
         # video_fps = cap.get(cv2.CAP_PROP_FPS)
         bbox_thick = int(0.6 * (height + width) / 600)
         frame_count = 0

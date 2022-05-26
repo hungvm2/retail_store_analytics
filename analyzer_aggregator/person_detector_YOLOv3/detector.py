@@ -16,7 +16,7 @@ class PersonDetector:
         self.class_name = load_classes(class_names_path)
         self.input_size = input_size
 
-    def detect_image(self, image, conf_thres=0.4, nms_thres=0.5):
+    def detect_image(self, image, conf_thres=0.6, nms_thres=0.5):
         # Configure input
         input_img = transforms.Compose([
             DEFAULT_TRANSFORMS,

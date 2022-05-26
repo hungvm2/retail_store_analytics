@@ -25,8 +25,10 @@ class DataAggregator:
         new_grid_pos_y = int(person.centroid_coords[1] // self.grid_size[1])
         current_grid_pos_x = person.current_grid_pos[0]
         current_grid_pos_y = person.current_grid_pos[1]
-        if new_grid_pos_x > self.grid_nums[0]: new_grid_pos_x = self.grid_nums[0]
-        if new_grid_pos_y > self.grid_nums[1]: new_grid_pos_y = self.grid_nums[1]
+        if new_grid_pos_x >= self.grid_nums[0]:
+            new_grid_pos_x = self.grid_nums[0] - 1
+        if new_grid_pos_y >= self.grid_nums[1]:
+            new_grid_pos_y = self.grid_nums[1] - 1
         if new_grid_pos_x == current_grid_pos_x and new_grid_pos_y == current_grid_pos_y:
             if now - person.last_update_grid_pos_time >= self.grid_pos_checking_time_interval:
                 self.aggregated_data[new_grid_pos_x][new_grid_pos_y] += 1
