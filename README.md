@@ -60,29 +60,46 @@
 
 5.Cài các thư viện:
   > pip install -r ./requirements.txt
+
   > pip install torch==1.10.0+cu113 torchvision==0.11.1+cu113 -f https://download.pytorch.org/whl/torch_stable.html
+
   > pip install mysql-connector-python
+
   > pip install scikit-image 
 
-### Hướng dẫn chạy module generate data:
+### Hướng dẫn chạy module VideoAnalyzer:
 ```
-cd /mnt/Data/MasterofDataScience/Phat\ trien\ phan\ mem\ nang\ cao\ cho\ tinh\ toan\ khoa\ hoc/retail_store_analytics/aggregator   
-python aggregator.py
+cd retail_store_analytics/analyzer_aggregator   
+python video_analyzer.py --cam_id 1
 
 ```
+### Hướng dẫn chạy module Visualizer:
+```
+cd retail_store_analytics/visuzler   
+jupyter notebook
+# Mở file visuazlier.ipynb trong Jupyter notebook dashboard
 
+```
 
 
 ### References:
 ```
-@misc{pytorch-YOLOv4,
-  author = {Tianxiaomo},
-  title = {Pytorch-YOLOv4},
+@misc{pytorch-YOLOv3,
+  author = {eriklindernoren},
+  title = {Pytorch-YOLOv3},
   year = {2022},
   publisher = {GitHub},
   journal = {GitHub repository},
-  howpublished = {\url{https://github.com/Tianxiaomo/pytorch-YOLOv4}},
-  commit = {a65d219f9066bae4e12003bd7cdc04531860c672}
+  howpublished = {\url{https://github.com/eriklindernoren/PyTorch-YOLOv3}}
+}
+```
+
+```
+@article{yolov3,
+  title={YOLOv3: An Incremental Improvement},
+  author={Redmon, Joseph and Farhadi, Ali},
+  journal = {arXiv},
+  year={2018}
 }
 ```
 
