@@ -8,8 +8,8 @@ from contextlib import closing
 
 from data_aggregator import DataAggregator
 
-from person_detector_YOLOv3.detector import PersonDetector
-from persons_tracker import PersonsTracker
+from customers_detector.detector import PersonDetector
+from customers_tracker import PersonsTracker
 
 
 class VideoAnalyzer:
@@ -82,9 +82,9 @@ def parse_args():
 
 if __name__ == '__main__':
     network_name = "yolov3"
-    weights_file = f"person_detector_YOLOv3/network_data/{network_name}.weights"
-    cfg_file = f"person_detector_YOLOv3/network_data/{network_name}.cfg"
-    names_file = "person_detector_YOLOv3/network_data/coco.names"
+    weights_file = f"analyzer_aggregator/customers_detector/network_data/{network_name}.weights"
+    cfg_file = f"analyzer_aggregator/customers_detector/network_data/{network_name}.cfg"
+    names_file = "analyzer_aggregator/customers_detector/network_data/coco.names"
     args = parse_args()
     video_analyzer = VideoAnalyzer(weights_file, cfg_file, names_file)
     video_analyzer.process(args.camera_id)

@@ -4,9 +4,9 @@ import numpy as np
 import torch
 import torchvision.transforms as transforms
 
-from person_detector_YOLOv3.models import load_model
-from person_detector_YOLOv3.utils.transforms import Resize, DEFAULT_TRANSFORMS
-from person_detector_YOLOv3.utils.utils import load_classes, rescale_boxes, non_max_suppression
+from customers_detector.models import load_model
+from customers_detector.utils.transforms import Resize, DEFAULT_TRANSFORMS
+from customers_detector.utils.utils import load_classes, rescale_boxes, non_max_suppression
 
 
 class PersonDetector:

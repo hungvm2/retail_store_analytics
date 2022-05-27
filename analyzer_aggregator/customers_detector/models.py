@@ -7,8 +7,8 @@ import torch.nn as nn
 import torch.nn.functional as F
 import numpy as np
 
-from person_detector_YOLOv3.utils.parse_config import parse_model_config
-from person_detector_YOLOv3.utils.utils import weights_init_normal
+from customers_detector.utils.parse_config import parse_model_config
+from customers_detector.utils.utils import weights_init_normal
 
 
 def create_modules(module_defs):

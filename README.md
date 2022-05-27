@@ -1,13 +1,13 @@
 # Retail Store Analytics Project
 ### Project gồm có 3 thành phần chính:
-- Module phân tích luồng video và tổng hợp dữ liệu khách hàng trong cửa hàng
+- Module phân tích luồng video và tổng hợp dữ liệu về mức độ quan tâm của khách hàng trong cửa hàng
 - Module visualize thông tin khách hàng trên giao diện web
 
 ### Chi tiết công nghệ của từng thành phần:
 
-1. Module xử lý luồng video, sinh ra dữ liệu heatmap 
+1. Module xử lý luồng video, tổng hợp dữ liệu về mức độ quan tâm của khách hàng 
     - OpenCV để đọc luồng 
-    - Yolov4 để detect người trong khung hình 
+    - Yolov3 để detect người trong khung hình 
     - SORT để tracking các đối tượng người trong khung hình 
     - Logic lưu trữ data vị trí trọng tâm của từng người trong khung hình vào file dữ liệu 
 
@@ -71,14 +71,12 @@
 ```
 cd retail_store_analytics/analyzer_aggregator   
 python video_analyzer.py --cam_id 1
-
 ```
 ### Hướng dẫn chạy module Visualizer:
 ```
 cd retail_store_analytics/visuzler   
 jupyter notebook
 # Mở file visuazlier.ipynb trong Jupyter notebook dashboard
-
 ```
 
 
