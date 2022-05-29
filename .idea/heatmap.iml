@@ -5,8 +5,8 @@
       <sourceFolder url="file://$MODULE_DIR$/processor/person_detection/yolov5" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/processor/person_detection/pytorch-YOLOv4" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/analyzer_aggregator" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/visualizer" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/analyzer_aggregator" isTestSource="false" />
     </content>
     <orderEntry type="jdk" jdkName="Python 3.8 (retail_store)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />

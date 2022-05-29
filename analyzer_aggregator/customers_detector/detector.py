@@ -34,8 +34,8 @@ class PersonDetector:
         return detections.numpy()
 
     @staticmethod
-    def plot_boxes_cv2(img, person, bbox_thick):
+    def plot_boxes_cv2(img, person):
         x1, y1, x2, y2 = person.bbox[:4]
         rgb = (255, 0, 0)
-        img = cv2.rectangle(img, (int(x1), int(y1)), (int(x2), int(y2)), rgb, bbox_thick)
+        img = cv2.rectangle(img, (int(x1), int(y1)), (int(x2), int(y2)), rgb, 2)
         return img

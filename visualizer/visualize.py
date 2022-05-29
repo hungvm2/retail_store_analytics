@@ -1,3 +1,4 @@
+import cv2
 import matplotlib.pyplot as plt
 
 from heatmap_db import *
@@ -8,18 +9,43 @@ class Visualizer:
     def __init__(self):
         self.db = RetailStoreDB('localhost', 'root', 'abcd@1234', 'retail_store_analytics')
 
-    def show_heatmap1(self, start_time, end_time):
-        s1 = f"select * " \
-             f"from coordinates_aggregation " \
-             f"where aggr_time>='{start_time}' " \
-             f"   and aggr_time<='{end_time}'"
+    def get_camera_url_from_db(self, camera_id):
+        sql_command = f"SELECT url from camera WHERE cam_id = {camera_id}"
+        cursor = self.db.conn.cursor()
+        cursor.execute(sql_command)
+        data = cursor.fetchone()
+        camera_url = ""
+        if data is not None:
+            camera_url = data[0]
+        cursor.close()
+        return camera_url
+
+    def get_frame_from_cam(self, cam_id):
+        camera_url = self.get_camera_url_from_db(cam_id)
+        cap = cv2.VideoCapture(camera_url)
+        frame = np.zeros((1920, 1080))
+        while cap.isOpened():
+            ret, _frame = cap.read()
+            if _frame is not None:
+                frame = _frame
+            break
+        frame = cv2.resize(frame, dsize=(1920, 1080), interpolation=cv2.INTER_AREA)
+        cv2.imwrite("frame1.png", frame)
+
+    def show_heatmap(self, start_time, end_time, cam_id=1):
+        s1 = f"SELECT * " \
+             f"FROM coordinates_aggregation " \
+             f"WHERE aggr_time>='{start_time}' " \
+             f"AND aggr_time<='{end_time}' AND cam_id = '{cam_id}'"
         dat = self.db.getData(s1)
 
         # 1. plot heat map by space
         tshots = timeShots(dat)
         m = tshots.sumData()
         # print(type(m))
-        img = plt.imread("frame.png")
+
+        self.get_frame_from_cam(cam_id)
+        img = plt.imread("frame1.png")
         fig, ax = plt.subplots(figsize=(19.2, 10.8), dpi=100)
         ax.imshow(img)
         ax.set_title("Customer's Interest by Space")
@@ -32,11 +58,11 @@ class Visualizer:
         cbar = ax.figure.colorbar(im, ax=ax)
         cbar.ax.set_ylabel("customer density", rotation=-90, va="bottom")
 
-    def show_barchart(self, start_time, end_time):
-        s2 = f"select * " \
-             f"from coordinates_aggregation " \
-             f"where aggr_time>='{start_time}' " \
-             f"   and aggr_time<='{end_time}'"
+    def show_barchart(self, start_time, end_time, cam_id=1):
+        s2 = f"SELECT * " \
+             f"FROM coordinates_aggregation " \
+             f"WHERE aggr_time>='{start_time}' " \
+             f"AND aggr_time<='{end_time}' AND cam_id = '{cam_id}'"
         dat2 = self.db.getData(s2)
 
         # 2. plot bar chart by date
